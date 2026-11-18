@@ -1,0 +1,22 @@
+# Host Nginx: ganti domain dan path sertifikat dengan domain Anda.
+server {
+    listen 80;
+    server_name language.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name language.example.com;
+    ssl_certificate /etc/letsencrypt/live/language.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/language.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 9m;
+    client_body_timeout 30s;
+    location / {
+        proxy_pass http://127.0.0.1:8088;
+        proxy_set_header Host $host;
+        proxy_set_header Authorization $http_authorization;
+        proxy_read_timeout 60s;
+    }
+}
